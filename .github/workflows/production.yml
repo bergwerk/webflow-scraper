@@ -1,0 +1,82 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy scraped Webflow site
+
+# Controls when the action will run.
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+
+  # Needed for being triggered by Github API
+  workflow_dispatch:
+
+  # Run every day at 12 am (0:00)
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache-
+
+      - name: Install dependencies
+        uses: php-actions/composer@v6
+        with:
+          php_version: 8.0
+          version: 2
+          interaction: no
+          dev: yes
+          progress: yes
+          args: --profile --ignore-platform-reqs
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - run: npm install
+
+      - run: |
+          cp .env.sample .env
+          sed -i -e "s|%WEBFLOW_BASE_URL%|${{ secrets.WEBFLOW_BASE_URL }}|g" ".env"
+          sed -i -e "s|%ADDITIONAL_URLS%|${{ secrets.ADDITIONAL_URLS }}|g" ".env"
+          sed -i -e "s|%WEBFLOW_SITE_ID%|${{ secrets.WEBFLOW_SITE_ID }}|g" ".env"
+          sed -i -e "s|%WEBFLOW_SITE_ID%|${{ secrets.WEBFLOW_SITE_ID }}|g" ".env"
+          sed -i -e "s|%PERSONAL_ACCESS_TOKEN%|${{ secrets.PERSONAL_ACCESS_TOKEN }}|g" ".env"
+          sed -i -e "s|%REPOSITORY_VENDOR%|${{ secrets.REPOSITORY_VENDOR }}|g" ".env"
+          sed -i -e "s|%REPOSITORY_NAME%|${{ secrets.REPOSITORY_NAME }}|g" ".env"
+          sed -i -e "s|%WORKFLOW_FILE%|${{ secrets.WORKFLOW_FILE }}|g" ".env"
+          sed -i -e "s|%BRANCH%|${{ secrets.BRANCH }}|g" ".env"
+          sed -i -e "s|%MAIN_FOLDER_NAME%|${{ secrets.MAIN_FOLDER_NAME }}|g" "public/.htaccess"
+          sed -i -e "s|%PUBLIC_URL%|${{ secrets.PUBLIC_URL }}|g" "public/.htaccess"
+
+      - run: npm run download
+
+      - run: rm -rf node_modules
+
+      - name: rsync deployments
+        uses: burnett01/rsync-deployments@4.1
+        with:
+          switches: -avzr --quiet --delete
+          remote_path: ${{ secrets.REMOTE_TARGET }}
+          remote_host: ${{ secrets.REMOTE_HOST }}
+          remote_port:  ${{ secrets.REMOTE_PORT }}
+          remote_user: ${{ secrets.REMOTE_USER }}
+          remote_key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}

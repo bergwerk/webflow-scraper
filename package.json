@@ -1,0 +1,13 @@
+{
+  "private": "true",
+  "type": "module",
+  "scripts": {
+    "download": "node ./build/scraper.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "fs-extra": "^10.0.1",
+    "website-scraper": "^5.0.0",
+    "website-scraper-existing-directory": "^1.0.0"
+  }
+}

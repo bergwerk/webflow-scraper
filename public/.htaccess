@@ -1,0 +1,18 @@
+# Only needed for hosting with Hetzner
+FcgidWrapper "/home/httpd/cgi-bin/php80-fcgi-starter.fcgi" .php
+
+RewriteEngine on
+
+RewriteRule ^$ /%MAIN_FOLDER_NAME%/ [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/%MAIN_FOLDER_NAME%/
+RewriteRule ^(.*)$ /%MAIN_FOLDER_NAME%/$1
+
+RewriteCond %{SCRIPT_FILENAME} -d
+RewriteRule ^%MAIN_FOLDER_NAME%/(.*[^/])$ %PUBLIC_URL%$1/ [R=301]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html [NC,L]
