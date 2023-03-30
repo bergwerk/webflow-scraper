@@ -16,6 +16,19 @@ We wanted a solution where we could still design and develop with webflow but no
 ## Usage
 
 1. Fork the project on Github
+- WEBFLOW_BASE_URL: staging URL of your Webflow project. This is used to replace the placeholder %WEBFLOW_BASE_URL% in the .env file with the actual URL where the project is hosted.
+-ADDITIONAL_URLS: additional URLs of files that should be saved on your server. This is used to replace the placeholder %ADDITIONAL_URLS% in the .env file with the actual URLs of the files that need to be saved.
+- WEBFLOW_SITE_ID: site ID of your Webflow project. This is used to replace the placeholder %WEBFLOW_SITE_ID% in the .env file with the actual site ID of your project.
+- PERSONAL_ACCESS_TOKEN: a GitHub access token used for authentication. This is used to replace the placeholder %PERSONAL_ACCESS_TOKEN% in the .env file with the actual token value.
+- REPOSITORY_VENDOR: the name of your repository, consisting of two strings: "vendor/repository". This secret is used to replace the placeholder %REPOSITORY_VENDOR% in the .env file with the actual vendor name.
+- REPOSITORY_NAME: the name of your repository, consisting of two strings: "vendor/repository". This secret is used to replace the placeholder %REPOSITORY_NAME% in the .env file with the actual repository name.
+- WORKFLOW_FILE: the name of the file located in .github/workflows. This secret is used to replace the placeholder %WORKFLOW_FILE% in the .env file with the actual name of the workflow file.
+- BRANCH: the name of the GitHub branch. This secret is used to replace the placeholder %BRANCH% in the .env file with the actual branch name.
+- MAIN_FOLDER_NAME: basically the URL of your Webflow project without "https://" and without trailing "/". This secret is used to replace the placeholder %MAIN_FOLDER_NAME% in the .htaccess file with the actual URL of your Webflow project.
+- PUBLIC_URL: the domain on which the main site should run. This secret is used to replace the placeholder %PUBLIC_URL% in the .htaccess file with the actual domain on which the main site should run.
+
+
+
 2. Add Github project secrets https://docs.github.com/en/actions/security-guides/encrypted-secrets
 - `REMOTE_HOST` host of server
 - `REMOTE_PORT` port of server (most likely 22)
